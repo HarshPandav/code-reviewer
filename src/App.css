@@ -1,0 +1,117 @@
+*{
+  margin: 0;
+  padding: 0;
+}
+
+body{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'poppins', sans-serif;
+  background-color: var(--bg);
+  color: var(--text-white);
+}
+
+:root{
+  --bg: #0F1115;
+  --secondary-bg: #13131B;
+  --tertiary-bg: #16181E;
+  --button-black-bg: #1F1F27;
+  --blue: #6366F1;
+  --black-bg-tertiary: #34343D;
+  --light-red: #FFB4AB;
+  --warning: #FFB783;
+  --tw-bg-opacity: 1;
+  --text-white: #E4E1ED;
+  --text-gray: #B3C0D7;
+  --border-color: rgba(144, 143, 160, 0.1);
+  --black-hover: rgb(41 41 50 / var(--tw-bg-opacity, 1));
+}
+
+.navbar{
+  display: flex;
+  align-items: center;
+  height: 4rem;
+  background-color: var(--secondary-bg);
+  border-bottom: 1px solid var(--border-color);
+  padding: 0px 40px;
+}
+
+.navbar .links{
+  display: flex;
+  align-items: center;
+  color: var(--text-gray);
+  font-size: 14px;
+  gap: 2rem;
+  margin-left: 50px;
+  font-weight: 500;
+}
+
+.right{
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.right-btn{
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: transparent;
+  font-size: 12px;
+  border: 1px solid var(--border-color);
+}
+
+.right-btn:hover{
+  transform: scale(1.05);
+  transition: 0.2s;
+}
+
+.download-btn{
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: var(--blue);
+  font-size: 12px;
+  border: 1px solid var(--border-color);
+}
+
+.download-btn:hover{
+  transform: scale(1.05);
+  transition: 0.2s;
+}
+
+.setting-icon{
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.app-container{
+  height: calc(100vh - 4rem);
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.left-header{
+  border-bottom: 1px solid var(--border-color);
+}
+
+.language-selector{
+  margin: 10px;
+  padding: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: transparent;
+  font-size: 12px;
+  border: 1px solid var(--border-color);
+  outline: none;
+}
+
+.language-selector option{
+  background-color: black;
+}
+::-webkit-scrollbar{
+  display: none;
+}
