@@ -32,6 +32,7 @@ body{
   display: flex;
   align-items: center;
   height: 4rem;
+  width: 50%;
   background-color: var(--secondary-bg);
   border-bottom: 1px solid var(--border-color);
   padding: 0px 40px;
@@ -47,12 +48,12 @@ body{
   font-weight: 500;
 }
 
-.right{
+/* .right{
   margin-left: auto;
   display: flex;
   align-items: center;
   gap: 1rem;
-}
+} */
 
 .right-btn{
   padding: 5px 10px;
@@ -119,4 +120,8 @@ button:hover {
 
 .code-editor{
   height: 72vh;
+}
+
+.progressbar{
+  border: 1px solid var(--border-color);
 }

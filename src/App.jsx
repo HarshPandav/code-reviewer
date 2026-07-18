@@ -3,6 +3,7 @@ import Editor from '@monaco-editor/react';
 import './App.css'
 import Navbar from './components/Navbar'
 import ScoreSquare from './components/ScoreSquare';
+import ProgressBar from './components/ProgressBar';
 
 const App = () => {
 
@@ -92,13 +93,21 @@ const App = () => {
               <p>To see result!</p>
             </div>
           ) : screen === "analyze" ? (
-            <div className="w-full h-full bg-red-500">
-              <div className="flex items-center gap-3.5">
-                <ScoreSquare score={30}/>
+            <div className="w-full h-full">
+              <div className="flex items-center gap-3.5 w-full">
+                <ScoreSquare score={30} />
+                <div className='flex flex-col gap-1'>
+                  <h3 className='text-2xl font-bold'>Overall Score</h3>
+                  <p className='text-gray-400'>Analysis completed</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2.5 w-full">
+                <ProgressBar name={"test"} score={40}/>
+                <ProgressBar name={"test"} score={40}/>
               </div>
             </div>
           ) : screen === "explain" ? (
-            <div className="w-full h-full bg-green-500">
+            <div className="w-full h-full">
             </div>
           ) : null}
         </div>
