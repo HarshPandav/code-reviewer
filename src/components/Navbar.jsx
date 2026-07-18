@@ -14,7 +14,7 @@ const Navbar = () => {
         </div>
         <div className="right">
             <button className='right-btn'>Copy Report</button>
-            <button className='download-btn'>Download Code</button>
+            <button className='blue-btn'>Download Code</button>
             <i className='setting-icon'><IoSettingsSharp /></i>
         </div>
     </div>

@@ -61,20 +61,21 @@ body{
   background-color: transparent;
   font-size: 12px;
   border: 1px solid var(--border-color);
+  width: 100px;
 }
 
-.right-btn:hover{
-  transform: scale(1.05);
-  transition: 0.2s;
+button:hover {
+  opacity: 0.8;
 }
 
-.download-btn{
+.blue-btn{
   padding: 5px 10px;
   border-radius: 5px;
   cursor: pointer;
   background-color: var(--blue);
   font-size: 12px;
   border: 1px solid var(--border-color);
+  margin-right: 10px;
 }
 
 .download-btn:hover{
@@ -114,4 +115,8 @@ body{
 }
 ::-webkit-scrollbar{
   display: none;
+}
+
+.code-editor{
+  height: 72vh;
 }
