@@ -1,4 +1,4 @@
-import React ,{useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import Navbar from "./components/Navbar";
 import Editor from "@monaco-editor/react";
 import ScoreSquare from "./components/ScoreSquare";
@@ -8,11 +8,18 @@ import WarningCom from "./components/WarningCom";
 import SecurityAudit from "./components/SecurityAudit";
 import { FaWandMagicSparkles } from "react-icons/fa6";
 import { FaRegFileAlt, FaMagic } from "react-icons/fa";
+import { explain, main } from './Ai';
+import { toast } from 'react-toastify';
+import MarkdownPreview from '@uiw/react-markdown-preview';
 
 function App() {
 
-  const [isNoContent , setIsNoContent] = useState(false)
-  const[screen , setScreen] = useState("analyze")
+  const [isNoContent, setIsNoContent] = useState(true)
+  const [screen, setScreen] = useState("noscreen")
+  const [language, setLanguage] = useState("html")
+  const [code, setCode] = useState("")
+  const [data, setData] = useState()
+  const [explainData, setExplainData] = useState("")
 
   function handleEditorWillMount(monaco) {
     monaco.editor.defineTheme("codeReviewTheme", {
@@ -50,212 +57,263 @@ function App() {
       },
     });
   }
- return (
-  <>
-    <Navbar />
 
-    <div className="flex h-[calc(100vh-72px)] bg-slate-950 text-white">
-      {/* ================= Left Panel ================= */}
-      <div className="flex w-1/2 flex-col border-r border-slate-700">
+  const get_response = async () => {
+    if (!code.trim()) {
+      toast.error("Please enter some code to analyze");
+      return;
+    }
 
-        {/* Header */}
-        <div className="flex h-16 items-center justify-between border-b border-slate-700 px-6">
+    try {
+      const response = await main(code, language);
 
-          {/* Language Selector */}
-          <select
-            className="rounded-lg border border-slate-600 bg-slate-900 px-4 py-2 text-sm text-white outline-none transition duration-200 hover:border-indigo-500 focus:border-indigo-500"
-          >
-            <option value="html">HTML</option>
-            <option value="css">CSS</option>
-            <option value="javascript">JavaScript</option>
-            <option value="typescript">TypeScript</option>
-            <option value="java">Java</option>
-            <option value="python">Python</option>
-            <option value="c">C</option>
-            <option value="cpp">C++</option>
-            <option value="csharp">C#</option>
-            <option value="php">PHP</option>
-            <option value="go">Go</option>
-            <option value="sql">SQL</option>
-          </select>
+      console.log("RESPONSE:", response);
+      const data = JSON.parse(response);
+      setData(data);
+      setIsNoContent(false)
+      setScreen("analyze")
 
-          {/* Analyze Button */}
-          <button className="flex items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2.5 font-medium text-white transition-all duration-300 hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-600/30 active:scale-95">
-            <FaWandMagicSparkles />
-            Analyze Code
-          </button>
-        </div>
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-        <div className="flex-1 overflow-hidden">
-          <Editor
-            height="100%"
-            language="javascript"
-            beforeMount={handleEditorWillMount}
-            theme="codeReviewTheme"
-            value="// some comment"
-          />
-        </div>
+  const explain_code = async () => {
+    try {
+      if (code === "") {
+        toast.error("please enter some code to explain")
+        return
+      }
+      let response = await explain(code, language)
+      setExplainData(response)
+      setIsNoContent(false)
+      setScreen("explain")
+    } catch (error) {
+      toast.error("Something went wrong!")
+    }
+  }
 
-        <div className="flex gap-4 border-t border-slate-700 p-4">
 
-          <button className="flex h-12 w-full items-center justify-center rounded-lg bg-slate-800 font-medium text-white transition-all duration-300 hover:bg-indigo-600 active:scale-95">
-            Fix Code
-          </button>
+  useEffect(() => {
+    console.log(code);
+  }, [code])
 
-          <button className="flex h-12 w-full items-center justify-center rounded-lg bg-slate-800 font-medium text-white transition-all duration-300 hover:bg-indigo-600 active:scale-95">
-            Explain Code
-          </button>
 
-        </div>
-      </div>
+  return (
+    <>
+      <Navbar />
 
-      <div className="w-1/2 overflow-y-auto bg-slate-900 p-8">
+      <div className="flex h-[calc(100vh-72px)] bg-slate-950 text-white">
+        {/* ================= Left Panel ================= */}
+        <div className="flex w-1/2 flex-col border-r border-slate-700">
 
-        {isNoContent ? (
-          <div className="flex h-full flex-col items-center justify-center">
+          {/* Header */}
+          <div className="flex h-16 items-center justify-between border-b border-slate-700 px-6">
 
-            <div className="flex h-36 w-36 items-center justify-center rounded-full bg-indigo-600 shadow-xl shadow-indigo-600/30">
-              <FaWandMagicSparkles className="text-6xl text-white" />
-            </div>
+            {/* Language Selector */}
+            <select
+              className="rounded-lg border border-slate-600 bg-slate-900 px-4 py-2 text-sm text-white outline-none transition duration-200 hover:border-indigo-500 focus:border-indigo-500"
+              onChange={(e) => { setLanguage(e.target.value) }}
+              value={language}
+            >
+              <option value="html">HTML</option>
+              <option value="css">CSS</option>
+              <option value="javascript">JavaScript</option>
+              <option value="typescript">TypeScript</option>
+              <option value="java">Java</option>
+              <option value="python">Python</option>
+              <option value="c">C</option>
+              <option value="cpp">C++</option>
+              <option value="csharp">C#</option>
+              <option value="php">PHP</option>
+              <option value="go">Go</option>
+              <option value="sql">SQL</option>
+            </select>
 
-            <h2 className="mt-8 text-3xl font-bold text-white">
-              Analyze Your Code
-            </h2>
+            {/* Analyze Button */}
+            <button onClick={get_response} className="flex items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2.5 font-medium text-white transition-all duration-300 hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-600/30 active:scale-95">
+              <FaWandMagicSparkles />
+              Analyze Code
+            </button>
+          </div>
 
-            <p className="mt-3 text-center text-slate-400">
-              Paste your source code and click{" "}
-              <span className="font-semibold text-indigo-400">
-                Analyze Code
-              </span>{" "}
-              to generate an AI-powered review.
-            </p>
+          <div className="flex-1 overflow-hidden">
+            <Editor
+              height="100%"
+              language={language}
+              beforeMount={handleEditorWillMount}
+              theme="codeReviewTheme"
+              value={code}
+              onChange={(code) => { setCode(code) }}
+              value={code}
+            />
+          </div>
+
+          <div className="flex gap-4 border-t border-slate-700 p-4">
+
+            <button className="flex h-12 w-full items-center justify-center rounded-lg bg-slate-800 font-medium text-white transition-all duration-300 hover:bg-indigo-600 active:scale-95">
+              Fix Code
+            </button>
+
+            <button onClick={explain_code} className="flex h-12 w-full items-center justify-center rounded-lg bg-slate-800 font-medium text-white transition-all duration-300 hover:bg-indigo-600 active:scale-95">
+              Explain Code
+            </button>
 
           </div>
-        ) : (
-          ""
-        )}
+        </div>
 
-      {screen === "analyze" ? (
-        <div className="space-y-8">
+        <div className="w-1/2 overflow-y-auto bg-slate-900 p-8">
 
-          {/* Overall Score */}
-          <div className="flex items-center gap-6">
+          {isNoContent ? (
+            <div className="flex h-full flex-col items-center justify-center">
 
-            <ScoreSquare score={30} />
+              <div className="flex h-36 w-36 items-center justify-center rounded-full bg-indigo-600 shadow-xl shadow-indigo-600/30">
+                <FaWandMagicSparkles className="text-6xl text-white" />
+              </div>
 
-            <div>
-              <h2 className="text-4xl font-bold">
-                Overall Score
+              <h2 className="mt-8 text-3xl font-bold text-white">
+                Analyze Your Code
               </h2>
 
-              <p className="mt-1 text-slate-400">
-                Analysis complete based on 42 rules.
+              <p className="mt-3 text-center text-slate-400">
+                Paste your source code and click{" "}
+                <span className="font-semibold text-indigo-400">
+                  Analyze Code
+                </span>{" "}
+                to generate an AI-powered review.
               </p>
+
             </div>
+          ) : (
+            ""
+          )}
 
-          </div>
+          {screen === "analyze" ? (
+            <div className="space-y-8">
 
-          {/* Progress Bars */}
-          <div className="grid grid-cols-2 gap-6">
+              {/* Overall Score */}
+              <div className="flex items-center gap-6">
 
-            <ProgressBar
-              name="Code Quality"
-              score={76}
-            />
+                <ScoreSquare score={data?.overallScore} />
 
-            <ProgressBar
-              name="Security"
-              score={40}
-            />
+                <div>
+                  <h2 className="text-4xl font-bold">
+                    Overall Score
+                  </h2>
 
-            <ProgressBar
-              name="Performance"
-              score={36}
-            />
-
-            <ProgressBar
-              name="Maintainability"
-              score={60}
-            />
-
-          </div>
-
-          <div className="rounded-xl border border-indigo-500/20 bg-indigo-950/20 p-6">
-
-            <div className="mb-5 flex items-center justify-between">
-
-              <div className="flex items-center gap-3">
-
-                <FaRegFileAlt className="text-3xl text-indigo-400" />
-
-                <h3 className="text-3xl font-bold text-indigo-300">
-                  Summary
-                </h3>
+                  <p className="mt-1 text-slate-400">
+                    Analysis complete based on 42 rules.
+                  </p>
+                </div>
 
               </div>
 
-              <FaMagic className="text-2xl text-slate-400" />
+              {/* Progress Bars */}
+              <div className="grid grid-cols-2 gap-6">
 
+                {
+                  data?.scoreBreakdown.map((item, index) => {
+                    return <ProgressBar
+                      key={index}
+                      name={item.name}
+                      score={item.score}
+                    />
+                  })
+                }
+
+              </div>
+
+              <div className="rounded-xl border border-indigo-500/20 bg-indigo-950/20 p-6">
+
+                <div className="mb-5 flex items-center justify-between">
+
+                  <div className="flex items-center gap-3">
+
+                    <FaRegFileAlt className="text-3xl text-indigo-400" />
+
+                    <h3 className="text-3xl font-bold text-indigo-300">
+                      Summary
+                    </h3>
+
+                  </div>
+
+                  <FaMagic className="text-2xl text-slate-400" />
+
+                </div>
+
+                <p className="text-lg leading-8 text-slate-200">
+                  {data?.summary}
+                </p>
+
+              </div>
+
+              <div className="space-y-5">
+
+                <h2 className="text-2xl font-bold uppercase tracking-wide text-red-400">
+                  Critical
+                </h2>
+
+                {
+                  data?.critical
+                    ? data.critical.length > 0
+                      ? data.critical.map((item, index) => (
+                        <CriticalBox
+                          key={index}
+                          data={{
+                            title: item.title,
+                            description: item.description,
+                            icon: item.icon,
+                          }}
+                        />
+                      ))
+                      : ""
+                    : ""
+                }
+
+              </div>
+
+              <div className="space-y-5">
+
+                <h2 className="text-2xl font-bold uppercase tracking-wide text-amber-400">
+                  Warning
+                </h2>
+
+                {/* <WarningCom
+                  title="Unused variables (1)"
+                  line={3}
+                /> */}
+
+                {
+                  data?.warnings
+                    ? data.warnings.length > 0
+                      ? data.warnings.map((item, index) => (
+                        <WarningCom
+                          key={index}
+                          data={{
+                            title: item.title,
+                            line: item.line,
+                          }}
+                        />
+                      ))
+                      : ""
+                    : ""
+                }
+
+              </div>
+
+              {data && <SecurityAudit data={data} />}
             </div>
-
-            <p className="text-lg leading-8 text-slate-200">
-              Your code is clean but lacks error handling.
-              Performance can be improved by reducing
-              re-renders and optimizing nested loops in the
-              data processor.
-            </p>
-
-          </div>
-
-          <div className="space-y-5">
-
-            <h2 className="text-2xl font-bold uppercase tracking-wide text-red-400">
-              Critical
-            </h2>
-
-            <CriticalBox
-              title="Error Handling"
-              description="Your code lacks error handling, which can lead to unexpected behavior and crashes. Implement try-catch blocks to handle potential errors."
-            />
-
-            <CriticalBox
-              title="Error Handling"
-              description="Your code lacks error handling, which can lead to unexpected behavior and crashes. Implement try-catch blocks to handle potential errors."
-            />
-
-          </div>
-
-          <div className="space-y-5">
-
-            <h2 className="text-2xl font-bold uppercase tracking-wide text-amber-400">
-              Warning
-            </h2>
-
-            <WarningCom
-              title="Unused variables (1)"
-              line={3}
-            />
-
-            <WarningCom
-              title="Console logs found (1)"
-              line={13}
-            />
-
-          </div>
-
-          <SecurityAudit />
+          ) : screen === "explain" ? (
+            <>
+              <MarkdownPreview source={explainData} />
+            </>
+          ) : (
+            ""
+          )}
 
         </div>
-      ) : screen === "explain" ? (
-          <></>
-        ) : (
-          ""
-        )}
-
       </div>
-    </div>
-  </>
-);
+    </>
+  );
 }
-
 export default App
