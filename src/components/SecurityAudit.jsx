@@ -5,80 +5,64 @@ import {
   FaLightbulb,
 } from "react-icons/fa";
 
-const SecurityAudit = () => {
+const SecurityAudit = ({ data }) => {
   return (
     <div className="space-y-8">
 
       {/* ================= Security Audit ================= */}
       <div>
-
         <h2 className="mb-5 text-xl font-bold text-white">
           Security Audit
         </h2>
 
         <div className="grid grid-cols-2 gap-6">
+          {data?.securityAudit?.metrics?.map((item, index) => (
+            <div
+              key={index}
+              className="rounded-xl border border-slate-700 bg-slate-900 p-6 transition-all duration-300 hover:border-indigo-500"
+            >
+              <p className="text-sm text-slate-400">
+                {item.name}
+              </p>
 
-          {/* OWASP */}
-          <div className="rounded-xl border border-slate-700 bg-slate-900 p-6 transition-all duration-300 hover:border-indigo-500">
-
-            <p className="text-sm text-slate-400">
-              OWASP Score
-            </p>
-
-            <h3 className="mt-3 text-4xl font-bold text-red-400">
-              D-
-            </h3>
-
-          </div>
-
-          {/* Injection Risk */}
-          <div className="rounded-xl border border-slate-700 bg-slate-900 p-6 transition-all duration-300 hover:border-indigo-500">
-
-            <p className="text-sm text-slate-400">
-              Injection Risk
-            </p>
-
-            <h3 className="mt-3 text-4xl font-bold text-red-500">
-              MAX
-            </h3>
-
-          </div>
-
+              <h3
+                className={`mt-3 text-4xl font-bold ${item.value === "High"
+                    ? "text-red-500"
+                    : item.value === "Medium"
+                      ? "text-yellow-400"
+                      : item.value === "Low"
+                        ? "text-green-500"
+                        : "text-slate-300"
+                  }`}
+              >
+                {item.value}
+              </h3>
+            </div>
+          ))}
         </div>
-
       </div>
 
       {/* ================= Compliance ================= */}
       <div>
-
         <h2 className="mb-5 text-xl font-bold text-white">
           Compliance Standards
         </h2>
 
         <div className="space-y-4">
+          {data?.complianceStandards?.map((item, index) => (
+            <div key={index} className="flex items-center gap-4">
+              {item.check === "yes" ? (
+                <FaCheck className="text-xl text-emerald-500" />
+              ) : (
+                <FaTimes className="text-xl text-red-400" />
+              )}
 
-          <div className="flex items-center gap-4">
-
-            <FaCheck className="text-xl text-emerald-500" />
-
-            <span className="text-xl text-white">
-              Strict Typing Enforced
-            </span>
-
-          </div>
-
-          <div className="flex items-center gap-4">
-
-            <FaTimes className="text-xl text-red-400" />
-
-            <span className="text-xl text-white">
-              Missing Error Handling
-            </span>
-
-          </div>
-
+              <span className="text-xl text-white">
+                {item.name}
+              </span>
+            </div>
+          ))}
         </div>
-
       </div>
 
       {/* ================= Pro Tip ================= */}
@@ -95,9 +79,7 @@ const SecurityAudit = () => {
         </div>
 
         <p className="text-lg leading-8 text-slate-400">
-          Parameter binding prevents SQL Injection by ensuring
-          that user input is never executed as code.
-          This is the industry standard for database security.
+          {data?.proTip}
         </p>
 
       </div>
