@@ -1,7 +1,7 @@
 import React from "react";
 import { FaFileAlt } from "react-icons/fa";
 
-const CriticalBox = ({ title, description }) => {
+const CriticalBox = ({ data }) => {
   return (
     <div className="rounded-xl border border-slate-700 bg-slate-900 p-6 transition-all duration-300 hover:border-red-400 hover:shadow-lg hover:shadow-red-500/10">
 
@@ -16,11 +16,11 @@ const CriticalBox = ({ title, description }) => {
         <div className="flex-1">
 
           <h3 className="text-3xl font-semibold text-white">
-            {title}
+            {data.title}
           </h3>
 
           <p className="mt-3 text-lg leading-8 text-slate-400">
-            {description}
+            {data.description}
           </p>
 
         </div>
