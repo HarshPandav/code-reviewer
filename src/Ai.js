@@ -246,7 +246,7 @@ const ai = new GoogleGenAI({
 
 export async function main(code, language) {
 
-    let FINAL_PROMPT = SYSTEM_PROMPT_ANALYZE + `Language${language}` + `code to review ${code}`
+  let FINAL_PROMPT = SYSTEM_PROMPT_ANALYZE + `Language${language}` + `code to review ${code}`
 
   const response = await ai.models.generateContent({
     model: "gemini-3.5-flash",
@@ -261,11 +261,24 @@ export async function explain(code, language) {
     let FINAL_PROMPT = SYSTEM_PROMPT_EXPLAIN + `Language: ${language}` + `code to review: ${code}`
     // console.log(FINAL_PROMPT)
     const response = await ai.models.generateContent({
-    model: "gemini-3.5-flash",
-    contents: FINAL_PROMPT,
-  });
+      model: "gemini-3.5-flash",
+      contents: FINAL_PROMPT,
+    });
     return response.text;
-    
+
+  } catch (error) {
+    return error
+  }
+}
+
+export async function fixCode(code, language) {
+  try {
+    let FINAL_PROMPT = SYSTEM_PROMPT_FIX + `Language: ${language}` + `code to fix: ${code}`
+    const response = await ai.models.generateContent({
+      model: "gemini-3.5-flash",
+      contents: FINAL_PROMPT,
+    });
+    return response.text;
   } catch (error) {
     return error
   }
