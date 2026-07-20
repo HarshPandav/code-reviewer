@@ -11,10 +11,13 @@ import { FaRegFileAlt, FaMagic } from "react-icons/fa";
 import { explain, fixCode, main } from './Ai';
 import { toast } from 'react-toastify';
 import MarkdownPreview from '@uiw/react-markdown-preview';
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 function App() {
 
-  const [isNoContent, setIsNoContent] = useState(true)
+  const [isNoContent, setIsNoContent] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [loadingType, setLoadingType] = useState("");
   const [screen, setScreen] = useState("noscreen")
   const [language, setLanguage] = useState("html")
   const [code, setCode] = useState("")
@@ -65,48 +68,70 @@ function App() {
     }
 
     try {
+      setLoading(true);
+      setLoadingType("analyze");
+
       const response = await main(code, language);
 
-      console.log("RESPONSE:", response);
-      const data = JSON.parse(response);
-      setData(data);
-      setIsNoContent(false)
-      setScreen("analyze")
+      const parsedData = JSON.parse(response);
 
+      setData(parsedData);
+      setScreen("analyze");
+      setIsNoContent(false);
     } catch (err) {
+      toast.error("Something went wrong!");
       console.error(err);
+    } finally {
+      setLoading(false);
+      setLoadingType("");
     }
   };
 
   const explain_code = async () => {
-    try {
-      if (code === "") {
-        toast.error("please enter some code to explain")
-        return
-      }
-      let response = await explain(code, language)
-      setExplainData(response)
-      setIsNoContent(false)
-      setScreen("explain")
-    } catch (error) {
-      toast.error("Something went wrong!")
+    if (!code.trim()) {
+      toast.error("Please enter some code to explain");
+      return;
     }
-  }
+
+    try {
+      setLoading(true);
+      setLoadingType("explain");
+
+      const response = await explain(code, language);
+
+      setExplainData(response);
+      setScreen("explain");
+      setIsNoContent(false);
+    } catch (error) {
+      toast.error("Something went wrong!");
+    } finally {
+      setLoading(false);
+      setLoadingType("");
+    }
+  };
 
   const fix_code = async () => {
-    try {
-      if (code === "") {
-        toast.error("please enter some code to fix")
-        return
-      }
-      let response = await fixCode(code, language)
-      setCode(response)
-      setIsNoContent(false)
-      setScreen("fix")
-    } catch (error) {
-      toast.error("something went wrong", error)
+    if (!code.trim()) {
+      toast.error("Please enter some code to fix");
+      return;
     }
-  }
+
+    try {
+      setLoading(true);
+      setLoadingType("fix");
+
+      const response = await fixCode(code, language);
+
+      setCode(response);
+      setScreen("fix");
+      setIsNoContent(false);
+    } catch (error) {
+      toast.error("Something went wrong!");
+    } finally {
+      setLoading(false);
+      setLoadingType("");
+    }
+  };
 
   useEffect(() => {
     console.log(code);
@@ -145,9 +170,22 @@ function App() {
             </select>
 
             {/* Analyze Button */}
-            <button onClick={get_response} className="flex items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2.5 font-medium text-white transition-all duration-300 hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-600/30 active:scale-95">
-              <FaWandMagicSparkles />
-              Analyze Code
+            <button
+              onClick={get_response}
+              disabled={loading}
+              className="flex items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2.5 font-medium text-white transition-all duration-300 hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-600/30 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {loadingType === "analyze" ? (
+                <>
+                  <AiOutlineLoading3Quarters className="animate-spin text-lg" />
+                  Analyzing...
+                </>
+              ) : (
+                <>
+                  <FaWandMagicSparkles />
+                  Analyze Code
+                </>
+              )}
             </button>
           </div>
 
@@ -165,12 +203,34 @@ function App() {
 
           <div className="flex gap-4 border-t border-slate-700 p-4">
 
-            <button onClick={fix_code} className="flex h-12 w-full items-center justify-center rounded-lg bg-slate-800 font-medium text-white transition-all duration-300 hover:bg-indigo-600 active:scale-95">
-              Fix Code
+            <button
+              onClick={fix_code}
+              disabled={loading}
+              className="flex h-12 w-full items-center justify-center rounded-lg bg-slate-800 font-medium text-white transition-all duration-300 hover:bg-indigo-600 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {loadingType === "fix" ? (
+                <>
+                  <AiOutlineLoading3Quarters className="mr-2 animate-spin" />
+                  Fixing...
+                </>
+              ) : (
+                "Fix Code"
+              )}
             </button>
 
-            <button onClick={explain_code} className="flex h-12 w-full items-center justify-center rounded-lg bg-slate-800 font-medium text-white transition-all duration-300 hover:bg-indigo-600 active:scale-95">
-              Explain Code
+            <button
+              onClick={explain_code}
+              disabled={loading}
+              className="flex h-12 w-full items-center justify-center rounded-lg bg-slate-800 font-medium text-white transition-all duration-300 hover:bg-indigo-600 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {loadingType === "explain" ? (
+                <>
+                  <AiOutlineLoading3Quarters className="mr-2 animate-spin" />
+                  Explaining...
+                </>
+              ) : (
+                "Explain Code"
+              )}
             </button>
 
           </div>
