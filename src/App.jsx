@@ -8,7 +8,7 @@ import WarningCom from "./components/WarningCom";
 import SecurityAudit from "./components/SecurityAudit";
 import { FaWandMagicSparkles } from "react-icons/fa6";
 import { FaRegFileAlt, FaMagic } from "react-icons/fa";
-import { explain, main } from './Ai';
+import { explain, fixCode, main } from './Ai';
 import { toast } from 'react-toastify';
 import MarkdownPreview from '@uiw/react-markdown-preview';
 
@@ -93,6 +93,20 @@ function App() {
     }
   }
 
+  const fix_code = async () => {
+    try {
+      if (code === "") {
+        toast.error("please enter some code to fix")
+        return
+      }
+      let response = await fixCode(code, language)
+      setCode(response)
+      setIsNoContent(false)
+      setScreen("fix")
+    } catch (error) {
+      toast.error("something went wrong", error)
+    }
+  }
 
   useEffect(() => {
     console.log(code);
@@ -151,7 +165,7 @@ function App() {
 
           <div className="flex gap-4 border-t border-slate-700 p-4">
 
-            <button className="flex h-12 w-full items-center justify-center rounded-lg bg-slate-800 font-medium text-white transition-all duration-300 hover:bg-indigo-600 active:scale-95">
+            <button onClick={fix_code} className="flex h-12 w-full items-center justify-center rounded-lg bg-slate-800 font-medium text-white transition-all duration-300 hover:bg-indigo-600 active:scale-95">
               Fix Code
             </button>
 
